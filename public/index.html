@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat with GPT-3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #conversation {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 10px;
+            overflow: auto;
+            border: 1px solid #000;
+            padding: 5px;
+        }
+        #messageBox {
+            width: 80%;
+            margin-right: 10px;
+        }
+    </style>
+    <script>
+        async function sendMessage() {
+            const messageBox = document.getElementById("messageBox");
+            const message = messageBox.value;
+            messageBox.value = "";
+
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({prompt: message})
+            });
+
+            if (!response.ok) {
+                alert("There was an error sending your message");
+                return;
+            }
+
+            const responseText = await response.text();
+            const conversation = document.getElementById("conversation");
+            conversation.textContent += "User: " + message + "\n";
+            conversation.textContent += "GPT-3: " + responseText + "\n";
+            // Auto scroll conversation view to the bottom
+            conversation.scrollTop = conversation.scrollHeight;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const messageBox = document.getElementById("messageBox");
+            messageBox.addEventListener("keydown", function(e) {
+                if (e.code === "Enter") {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <textarea id="conversation" disabled></textarea><br>
+    <input type="text" id="messageBox">
+    <button onclick="sendMessage()">Send</button>
+</body>
+</html>
