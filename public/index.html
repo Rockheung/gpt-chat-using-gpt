@@ -38,10 +38,10 @@
                 return;
             }
 
-            const responseText = await response.text();
+            const responseText = await response.json();
             const conversation = document.getElementById("conversation");
             conversation.textContent += "User: " + message + "\n";
-            conversation.textContent += "GPT-3: " + responseText + "\n";
+            conversation.textContent += "GPT-3: " + responseText + "\n"; // Updated this line
             // Auto scroll conversation view to the bottom
             conversation.scrollTop = conversation.scrollHeight;
         }

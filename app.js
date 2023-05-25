@@ -6,26 +6,31 @@ const path = require('path');
 
 const app = express();
 
-// Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.json());
 
 app.post('/api/chat', async (req, res) => {
-    const prompt = req.body.prompt;
+    const message = req.body.prompt;
+    const data = {
+        model: "gpt-3.5-turbo",
+        messages: [
+            {
+                role: "user",
+                content: message
+            }
+        ]
+    };
 
     try {
-        const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-            prompt: prompt,
-            max_tokens: 150
-        }, {
+        const response = await axios.post('https://api.openai.com/v1/chat/completions', data, {
             headers: {
                 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
                 'Content-Type': 'application/json'
             }
         });
 
-        res.json(response.data.choices[0].text.trim());
+        res.json(response.data.choices[0].message.content);  // Updated this line
     } catch (error) {
         res.status(500).json({ error: error.toString() });
     }
